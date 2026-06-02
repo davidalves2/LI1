@@ -1,0 +1,175 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>{-# OPTIONS_GHC -Wno-unused-matches #-}
+<span class="lineno">    2 </span>{-# OPTIONS_GHC -Wno-type-defaults #-}
+<span class="lineno">    3 </span>{-|
+<span class="lineno">    4 </span>Module      : Tarefa2
+<span class="lineno">    5 </span>Description : Auxiliares do Jogo
+<span class="lineno">    6 </span>Copyright   : José Manuel Peixoto Rocha &lt;a106887@alunos.uminho.pt&gt;
+<span class="lineno">    7 </span>              David Jose Barbosa Alves &lt;a107324@alunos.uminho.pt&gt;
+<span class="lineno">    8 </span>
+<span class="lineno">    9 </span>
+<span class="lineno">   10 </span>Módulo para a realização da Tarefa 2 de LI1 em 2024/25.
+<span class="lineno">   11 </span>-}
+<span class="lineno">   12 </span>module Tarefa2 where
+<span class="lineno">   13 </span>import LI12425
+<span class="lineno">   14 </span>
+<span class="lineno">   15 </span>{-|
+<span class="lineno">   16 </span>Identifica quais Inimigos estão dentro do alcance de uma Torre 
+<span class="lineno">   17 </span>-}
+<span class="lineno">   18 </span>inimigosNoAlcance :: Torre -&gt; [Inimigo] -&gt; [Inimigo]
+<span class="lineno">   19 </span><span class="decl"><span class="istickedoff">inimigosNoAlcance torre inimigos =</span>
+<span class="lineno">   20 </span><span class="spaces">    </span><span class="istickedoff">[inimigo | inimigo@(Inimigo {posicaoInimigo = pos, vidaInimigo = vida}) &lt;- inimigos,</span>
+<span class="lineno">   21 </span><span class="spaces">               </span><span class="istickedoff">distancia (posicaoTorre torre) pos &lt;= alcanceTorre torre &amp;&amp; vida &gt; 0]</span></span>
+<span class="lineno">   22 </span>
+<span class="lineno">   23 </span>{-|
+<span class="lineno">   24 </span>Calcula a distância euclidiana entre duas posições
+<span class="lineno">   25 </span>-}
+<span class="lineno">   26 </span>distancia :: Posicao -&gt; Posicao -&gt; Float
+<span class="lineno">   27 </span><span class="decl"><span class="istickedoff">distancia (x1, y1) (x2, y2) = sqrt ((x2 - x1)^2 + (y2 - y1)^2)</span></span>
+<span class="lineno">   28 </span>
+<span class="lineno">   29 </span>{-|
+<span class="lineno">   30 </span>Função que aplica os efeitos de um ataque da Torre a um Inimigo
+<span class="lineno">   31 </span>-}
+<span class="lineno">   32 </span>atingeInimigo :: Torre -&gt; Inimigo -&gt; Inimigo
+<span class="lineno">   33 </span><span class="decl"><span class="istickedoff">atingeInimigo (Torre {danoTorre = dano, projetilTorre = proj}) (Inimigo {posicaoInimigo = pos, ataqueInimigo = ataq, butimInimigo = valor, velocidadeInimigo = vel, direcaoInimigo = dir, vidaInimigo = vida, projeteisInimigo = lista}) =</span>
+<span class="lineno">   34 </span><span class="spaces">    </span><span class="istickedoff">(Inimigo { posicaoInimigo = pos,</span>
+<span class="lineno">   35 </span><span class="spaces">               </span><span class="istickedoff">velocidadeInimigo = vel,</span>
+<span class="lineno">   36 </span><span class="spaces">               </span><span class="istickedoff">ataqueInimigo = ataq,</span>
+<span class="lineno">   37 </span><span class="spaces">               </span><span class="istickedoff">butimInimigo = valor,</span>
+<span class="lineno">   38 </span><span class="spaces">               </span><span class="istickedoff">direcaoInimigo = dir,</span>
+<span class="lineno">   39 </span><span class="spaces">               </span><span class="istickedoff">vidaInimigo = vida - dano / 10,</span>
+<span class="lineno">   40 </span><span class="spaces">               </span><span class="istickedoff">projeteisInimigo = atualizarProjeteisInimigo lista proj })</span></span>
+<span class="lineno">   41 </span>
+<span class="lineno">   42 </span>{-|
+<span class="lineno">   43 </span>Função para atualizar a lista de projéteis do inimigo
+<span class="lineno">   44 </span>-}
+<span class="lineno">   45 </span>atualizarProjeteisInimigo :: [Projetil] -&gt; Projetil -&gt; [Projetil]
+<span class="lineno">   46 </span><span class="decl"><span class="istickedoff">atualizarProjeteisInimigo [] proj = [proj]</span>
+<span class="lineno">   47 </span><span class="spaces"></span><span class="istickedoff">atualizarProjeteisInimigo lista proj@(Projetil {tipoProjetil = tipo}) =</span>
+<span class="lineno">   48 </span><span class="spaces">    </span><span class="istickedoff">case tipo of</span>
+<span class="lineno">   49 </span><span class="spaces">        </span><span class="istickedoff">Fogo   -&gt; processaFogo lista proj</span>
+<span class="lineno">   50 </span><span class="spaces">        </span><span class="istickedoff">Gelo   -&gt; processaGelo lista <span class="nottickedoff">proj</span></span>
+<span class="lineno">   51 </span><span class="spaces">        </span><span class="istickedoff">Resina -&gt; processaResina lista <span class="nottickedoff">proj</span></span>
+<span class="lineno">   52 </span><span class="spaces">  </span><span class="istickedoff">where</span>
+<span class="lineno">   53 </span><span class="spaces">    </span><span class="istickedoff">{-|</span>
+<span class="lineno">   54 </span><span class="spaces">    </span><span class="istickedoff">Remove Fogo e Gelo se ambos existirem</span>
+<span class="lineno">   55 </span><span class="spaces">    </span><span class="istickedoff">-}</span>
+<span class="lineno">   56 </span><span class="spaces">    </span><span class="istickedoff">processaFogo listaProj projetil =</span>
+<span class="lineno">   57 </span><span class="spaces">        </span><span class="istickedoff">if <span class="tickonlyfalse">Gelo `elem` map tipoProjetil listaProj</span></span>
+<span class="lineno">   58 </span><span class="spaces">        </span><span class="istickedoff">then <span class="nottickedoff">filter (\p -&gt; tipoProjetil p /= Fogo &amp;&amp; tipoProjetil p /= Gelo) listaProj</span></span>
+<span class="lineno">   59 </span><span class="spaces">        </span><span class="istickedoff">else somaOuAdiciona listaProj projetil</span>
+<span class="lineno">   60 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   61 </span><span class="spaces">    </span><span class="istickedoff">{-|</span>
+<span class="lineno">   62 </span><span class="spaces">    </span><span class="istickedoff">Soma durações para Gelo ou cancela com Fogo</span>
+<span class="lineno">   63 </span><span class="spaces">    </span><span class="istickedoff">-}</span>
+<span class="lineno">   64 </span><span class="spaces">    </span><span class="istickedoff">processaGelo listaProj projetil =</span>
+<span class="lineno">   65 </span><span class="spaces">        </span><span class="istickedoff">if <span class="tickonlytrue">Fogo `elem` map tipoProjetil listaProj</span></span>
+<span class="lineno">   66 </span><span class="spaces">        </span><span class="istickedoff">then filter (\p -&gt; tipoProjetil p /= Fogo &amp;&amp; tipoProjetil p /= Gelo) listaProj</span>
+<span class="lineno">   67 </span><span class="spaces">        </span><span class="istickedoff">else <span class="nottickedoff">somaOuAdiciona listaProj projetil</span></span>
+<span class="lineno">   68 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   69 </span><span class="spaces">    </span><span class="istickedoff">{-|</span>
+<span class="lineno">   70 </span><span class="spaces">    </span><span class="istickedoff">Duração do Fogo dobra se Resina existir, remove Resina</span>
+<span class="lineno">   71 </span><span class="spaces">    </span><span class="istickedoff">-}</span>
+<span class="lineno">   72 </span><span class="spaces">    </span><span class="istickedoff">processaResina listaProj projetil =</span>
+<span class="lineno">   73 </span><span class="spaces">        </span><span class="istickedoff">if <span class="tickonlytrue">Fogo `elem` map tipoProjetil listaProj</span></span>
+<span class="lineno">   74 </span><span class="spaces">        </span><span class="istickedoff">then map (\p -&gt; if <span class="tickonlytrue">tipoProjetil p == Fogo</span> </span>
+<span class="lineno">   75 </span><span class="spaces">                        </span><span class="istickedoff">then p {duracaoProjetil = dobraDuracao (duracaoProjetil p)} </span>
+<span class="lineno">   76 </span><span class="spaces">                        </span><span class="istickedoff">else <span class="nottickedoff">p</span>) </span>
+<span class="lineno">   77 </span><span class="spaces">                  </span><span class="istickedoff">(filter (\p -&gt; tipoProjetil p /= Resina) listaProj)</span>
+<span class="lineno">   78 </span><span class="spaces">        </span><span class="istickedoff">else <span class="nottickedoff">somaOuAdiciona listaProj projetil</span></span>
+<span class="lineno">   79 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   80 </span><span class="spaces">    </span><span class="istickedoff">{-|</span>
+<span class="lineno">   81 </span><span class="spaces">    </span><span class="istickedoff">Adiciona durações para o mesmo tipo ou adicione o projétil</span>
+<span class="lineno">   82 </span><span class="spaces">    </span><span class="istickedoff">-}</span>
+<span class="lineno">   83 </span><span class="spaces">    </span><span class="istickedoff">somaOuAdiciona :: [Projetil] -&gt; Projetil -&gt; [Projetil]</span>
+<span class="lineno">   84 </span><span class="spaces">    </span><span class="istickedoff">somaOuAdiciona [] x = <span class="nottickedoff">[x]</span></span>
+<span class="lineno">   85 </span><span class="spaces">    </span><span class="istickedoff">somaOuAdiciona (p:ps) projetil</span>
+<span class="lineno">   86 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlytrue">tipoProjetil p == tipoProjetil projetil</span> =</span>
+<span class="lineno">   87 </span><span class="spaces">            </span><span class="istickedoff">p {duracaoProjetil = somaDuracao (duracaoProjetil p) (duracaoProjetil projetil)} : ps</span>
+<span class="lineno">   88 </span><span class="spaces">        </span><span class="istickedoff">| <span class="nottickedoff">otherwise</span> = <span class="nottickedoff">p : somaOuAdiciona ps projetil</span></span></span>
+<span class="lineno">   89 </span>
+<span class="lineno">   90 </span>{-|
+<span class="lineno">   91 </span>Função que soma as durações de projéteis
+<span class="lineno">   92 </span>-}
+<span class="lineno">   93 </span>somaDuracao :: Duracao -&gt; Duracao -&gt; Duracao
+<span class="lineno">   94 </span><span class="decl"><span class="istickedoff">somaDuracao (Finita t1) (Finita t2) = Finita (t1 + t2)</span>
+<span class="lineno">   95 </span><span class="spaces"></span><span class="istickedoff">somaDuracao _ Infinita = <span class="nottickedoff">Infinita</span></span>
+<span class="lineno">   96 </span><span class="spaces"></span><span class="istickedoff">somaDuracao Infinita _ = <span class="nottickedoff">Infinita</span></span></span>
+<span class="lineno">   97 </span>
+<span class="lineno">   98 </span>{-|
+<span class="lineno">   99 </span>Função que duplica a duração de um projétil
+<span class="lineno">  100 </span>-}
+<span class="lineno">  101 </span>dobraDuracao :: Duracao -&gt; Duracao
+<span class="lineno">  102 </span><span class="decl"><span class="istickedoff">dobraDuracao (Finita t) = Finita (2 * t)</span>
+<span class="lineno">  103 </span><span class="spaces"></span><span class="istickedoff">dobraDuracao Infinita = <span class="nottickedoff">Infinita</span></span></span>
+<span class="lineno">  104 </span>
+<span class="lineno">  105 </span>{-|
+<span class="lineno">  106 </span>Responsável por ativar Inimigos de um Portal, transferindo Inimigos de uma onda do Portal para a lista de Inimigos ativos
+<span class="lineno">  107 </span>-}
+<span class="lineno">  108 </span>ativaInimigo :: Tempo -&gt; Portal -&gt; [Inimigo] -&gt; (Portal, [Inimigo])
+<span class="lineno">  109 </span><span class="decl"><span class="istickedoff">ativaInimigo _ portal@(Portal {ondasPortal = []}) inimigos = <span class="nottickedoff">(portal, inimigos)</span></span>
+<span class="lineno">  110 </span><span class="spaces"></span><span class="istickedoff">ativaInimigo tempo portal@(Portal {posicaoPortal = pos, ondasPortal = onda@Onda {entradaOnda = entry, tempoOnda = time, cicloOnda = ciclo, inimigosOnda = inimigosOndaAtual} : resto}) inimigos =</span>
+<span class="lineno">  111 </span><span class="spaces">  </span><span class="istickedoff">if <span class="tickonlyfalse">null inimigosOndaAtual &amp;&amp; <span class="nottickedoff">entry &lt;= 0</span></span> then</span>
+<span class="lineno">  112 </span><span class="spaces">    </span><span class="istickedoff">-- A onda atual terminou, ativar a próxima onda, se existir</span>
+<span class="lineno">  113 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">let novoResto = case resto of</span></span>
+<span class="lineno">  114 </span><span class="spaces">          </span><span class="istickedoff"><span class="nottickedoff">(proxOnda : novasOndas) -&gt; proxOnda {entradaOnda = max 0 (entradaOnda proxOnda - tempo)} : novasOndas</span></span>
+<span class="lineno">  115 </span><span class="spaces">          </span><span class="istickedoff"><span class="nottickedoff">[] -&gt; []</span></span>
+<span class="lineno">  116 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">in (portal {ondasPortal = novoResto}, inimigos)</span></span>
+<span class="lineno">  117 </span><span class="spaces">  </span><span class="istickedoff">else</span>
+<span class="lineno">  118 </span><span class="spaces">    </span><span class="istickedoff">let</span>
+<span class="lineno">  119 </span><span class="spaces">      </span><span class="istickedoff">-- Atualiza o tempo de entrada da onda atual</span>
+<span class="lineno">  120 </span><span class="spaces">      </span><span class="istickedoff">novaEntradaOnda = max 0 (entradaOnda onda - tempo)</span>
+<span class="lineno">  121 </span><span class="spaces">      </span><span class="istickedoff">ondaAtualizada = onda {entradaOnda = novaEntradaOnda}</span>
+<span class="lineno">  122 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  123 </span><span class="spaces">      </span><span class="istickedoff">-- Lança um inimigo se o tempo da onda expira e a lista de inimigos não está vazia</span>
+<span class="lineno">  124 </span><span class="spaces">      </span><span class="istickedoff">(portalAtualizado, novosInimigos) =</span>
+<span class="lineno">  125 </span><span class="spaces">        </span><span class="istickedoff">if novaEntradaOnda == 0 &amp;&amp; not (null inimigosOndaAtual) then</span>
+<span class="lineno">  126 </span><span class="spaces">          </span><span class="istickedoff">let</span>
+<span class="lineno">  127 </span><span class="spaces">            </span><span class="istickedoff">inimigoSemProjeteis = (head inimigosOndaAtual) {projeteisInimigo = <span class="nottickedoff">[]</span>}</span>
+<span class="lineno">  128 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  129 </span><span class="spaces">            </span><span class="istickedoff">ondaRestante = onda {inimigosOnda = tail inimigosOndaAtual, entradaOnda = <span class="nottickedoff">ciclo</span>}</span>
+<span class="lineno">  130 </span><span class="spaces">          </span><span class="istickedoff">in (portal {ondasPortal = ondaRestante : <span class="nottickedoff">resto</span>}, inimigoSemProjeteis : inimigos)</span>
+<span class="lineno">  131 </span><span class="spaces">        </span><span class="istickedoff">else</span>
+<span class="lineno">  132 </span><span class="spaces">          </span><span class="istickedoff">(portal {ondasPortal = ondaAtualizada : <span class="nottickedoff">resto</span>}, inimigos)</span>
+<span class="lineno">  133 </span><span class="spaces">    </span><span class="istickedoff">in</span>
+<span class="lineno">  134 </span><span class="spaces">      </span><span class="istickedoff">(portalAtualizado, novosInimigos)</span></span>
+<span class="lineno">  135 </span>
+<span class="lineno">  136 </span>{-|
+<span class="lineno">  137 </span>Decide se o jogo terminou
+<span class="lineno">  138 </span>-}
+<span class="lineno">  139 </span>terminouJogo :: Jogo -&gt; Bool
+<span class="lineno">  140 </span><span class="decl"><span class="nottickedoff">terminouJogo jogo = ganhouJogo jogo || perdeuJogo jogo</span></span>
+<span class="lineno">  141 </span>
+<span class="lineno">  142 </span>{-|
+<span class="lineno">  143 </span>Verifica se o jogador ganhou o jogo
+<span class="lineno">  144 </span>-}
+<span class="lineno">  145 </span>ganhouJogo :: Jogo -&gt; Bool
+<span class="lineno">  146 </span><span class="decl"><span class="istickedoff">ganhouJogo jogo = null (inimigosJogo jogo) &amp;&amp; vidaBase (baseJogo jogo) &gt; 0 &amp;&amp; all (all (null . inimigosOnda) . ondasPortal) (portaisJogo jogo)</span></span>
+<span class="lineno">  147 </span>
+<span class="lineno">  148 </span>{-|
+<span class="lineno">  149 </span>Verifica se o jogador perdeu o jogo
+<span class="lineno">  150 </span>-}
+<span class="lineno">  151 </span>perdeuJogo :: Jogo -&gt; Bool
+<span class="lineno">  152 </span><span class="decl"><span class="istickedoff">perdeuJogo jogo = vidaBase (baseJogo jogo) &lt;= 0</span></span>
+
+</pre>
+</body>
+</html>
